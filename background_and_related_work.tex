@@ -1,0 +1,170 @@
+\section{Background and Related Work}
+Odyssey draws on techniques from the developer tool literature on program visualization and program history
+  to addresses key challenges developers face
+  in the domain of floating-point arithmetic.
+
+\subsection{Program Visualization for Debugging}
+
+Floating-point error analysis and repair
+  involves a mix of debugging and performance optimization work.
+Odyssey is thus inspired by work aimed at
+  program visualization for debugging.
+Systems such as Whyline~\cite{ko2004designing}, Timelapse~\cite{burg2013interactive}, and FireCrystal~\cite{oney2009firecrystal},
+  which connect code with runtime behavior by visualizing execution traces,
+  inspire several of Odyssey's interactions,
+  including the interactive ``local error'' heatmap 
+  visualizing per-operation floating-point error for a particular input.
+Moreover,
+  a series of papers on integrating visualizations with code,
+  such as Theseus~\cite{lieber2014theseus}, 
+  which provides always-on visualizations of runtime state;
+  Projection Boxes~\cite{lerner2020projectionBoxes}, 
+  which gives programmers more control
+  over which runtime values are visualized;
+  and Hoffswell et al.~\cite{hoffswell2018augmentingCodeWithInSituVis}, 
+  which provides recommendations
+  for embedding visualizations in code,
+  are reflected in our design of Odyssey's error graph,
+  which allows programmers to visualize floating-point error
+  and control which input values and rewritings
+  are visualized.
+Odyssey sees similar benefits from these designs as prior work:
+  opening up space for programmer exploration and observation,
+  and thereby giving programmers a fuller understanding of the problem space
+  and a richer set of interactions for comparison and repair.
+
+That said, floating-point rounding error
+  is a continuous, numeric quality of a program,
+  and the ``tuning'' stage of numerical work therefore has
+  a lot of analogs to performance optimization.
+Beck et al.~\cite{beck2013perfBottlenecksVis} and PerformanceHat~\cite{cito2018performanceHat}, for example,
+  visualize the proportion of runtime
+  spent at each each line of code in the program. 
+  These approaches inspire our ``heatmap'' design for local error information,
+  coloring each floating-point operation in the program
+  based on the amount of floating-point rounding error
+  it contributes to the result.
+The Roly-poly~\cite{ikarashi2021guidedOptimization} project is also quite similar to Odyssey,
+  aiding developers in exploring and selecting performance optimizations
+  for image processing code.
+Odyssey explores a similar system-aided optimization workflow,
+  but for accuracy instead of performance optimization.
+
+
+\subsection{Maintaining and Reviewing Code Versions}
+
+To understand, experiment with, and collaborate on code,
+  developers author and compare
+  multiple program alternatives and histories~\cite{codoban2015softwareHistory}.
+Tools such as Azurite~\cite{yoon2015azurite}, Verdant~\cite{kery2018verdant}, and Variolite~\cite{kery2017variolite}
+  provide explicit support for multiple program versions.
+For example, Verdant helps data scientists
+  compare, replay, and simplify histories
+  for code in computational notebooks~\cite{kery2018verdant}. 
+  Also, Head et al.~\cite{head2019managingMesses} introduce ``code gathering'' techniques
+  that find the minimal code slices in a program
+  that produce a selected set of results. 
+Comparing and combining multiple alternative rewritings
+  is a also key part of floating-point error repair.
+
+Odyssey maintains a history of rewritings
+  both to provide a history of how a rewriting was developed
+  and also allow developers to visualize, compare, and combine
+  multiple alternatives, providing explicit internal support
+  to what would otherwise be internal mental operations,
+  thereby reducing cognitive load and allowing developers
+  to focus on the higher-level problem-solving aspects.
+
+\subsection{Floating-Point Arithmetic and Numerical Analysis}
+
+Floating-point arithmetic,
+  defined by the IEEE~754 standard~\cite{ieee08-standard},
+  and variations of this standard
+  form the standard number representation
+  in most programming languages~\cite{toplas08-pitfalls-verifying}.
+However, floating-point arithmetic is subject to rounding error,
+  and even elementary computations often permit significant
+  error~\cite{acm91-every-scientist}.
+Numerical analysis provides a set of mathematical tools
+  to analyze, bound, and reduce this error~\cite{book87-nmse}.
+However, many programmers are unfamiliar with
+  numerical analysis techniques, and even fewer have
+  a thorough understanding of how to apply these tools.
+
+Researchers have thus developed a vast menagerie of tools
+  automating specific numerical analysis techniques,
+  including Rosa~\cite{popl14-rosa} for affine arithmetic,
+  FPTaylor~\cite{fm15-fptaylor} for error Taylor series, and
+  Ariadne~\cite{popl13-ariadne} for root finding.
+Other tools repurpose static analysis techniques
+  to find floating-point rounding errors;
+  such tools include Fluctuat~\cite{vmcai11-fluctuat},
+  which uses abstract interpretation;
+  FPDebug~\cite{pldi12-fpdebug},
+  which uses a dynamic execution with shadow variables;
+  and CGRS~\cite{ppopp14-cgrs}, which uses evolutionary search. 
+These tools can find inputs with high rounding error
+  or, in some cases, certify the absence of such errors.
+Programmers can then use the error found
+  to attempt to understand the source of the rounding error,
+  and ultimately fix it.
+One popular tool combining these steps is Herbie~\cite{herbie}.
+Herbie uses sampling techniques to identify floating-point error;
+  constructs candidate rewrites using algebraic and analytic identities,
+  and tests those rewrites against higher-precision executions
+  to identify the rewrite with the lowest floating-point error.
+In recent releases, Herbie can output multiple suggestions
+  with different performance and accuracy characteristics~\cite{pherbie}.
+
+Unfortunately, all of these tools, Herbie included,
+  are difficult for developers to use and integrate into their workflows.
+Users are typically expected to
+  identify the expression and inputs of interest up front;
+  compare them to other sources or the user's own ideas;
+  and make trade-offs between accuracy and other goals
+  (e.g., maintainability),
+  all without tool support.
+Users are often recommended
+  to switch between their code editor, version control system,
+  a mathematical visualization tool, and multiple Herbie instances
+  in order to solve a single problem~\cite{kneusel-numbers}.
+VSCode-PRECiSA \cite{vscode-precisa}, 
+  a VSCode interface for the PRECiSA 
+  command-line tool \cite{precisa} designed to support the process 
+  of analyzing a single program in several ways,
+  is somewhat of an exception; 
+  however, it does not address the problem of tool
+  interoperation.
+We developed Odyssey to address these limitations
+  by providing a single integrated workbench
+  for the full floating-point rounding error workflow.
+To lower the barriers to adoption,
+  Odyssey uses Herbie, a widely used and open source
+  tool~\cite{herbieGithub,kneusel-numbers},
+  under the hood. 
+
+
+\subsection{Expert tools for design space search}
+Odyssey is an expert tool for numerical analysts to re-write floating point
+expressions. Unlike tools for end-users, expert tools are designed for users
+with extensive design and implementation experience. Experts have honed
+specialized workflows, leverage insights to improve upon automated or
+semi-automated approaches, and are comfortable wading into low-level details.
+For example, expert developers optimize the performance of
+applications~\cite{cito2018performanceHat} and specialized pipelines. In the
+domain of high-performance image processing,
+Roly-Poly~\cite{ikarashi2021guidedOptimization} is a system built on top of the
+Halide compiler~\cite{ragan2013halide} for expert engineers to explore
+trade-offs and decide among possible optimizations. Odyssey is similar to
+Roly-Poly in that it supports interactive workflows with an automated tool to
+support expert users. In the statistical analysis domain, multiverse analysis
+tools such as Boba~\cite{liu2020boba} and Multiverse
+Debugger~\cite{gu2023understanding} enable expert statistical analysts to assess
+the robustness and sensitivity of analysis results. The intended users are
+experts in statistical analysis but not necessarily in multiverse authoring.
+Similarly, Tsugite helps expert fabrication users create new wood
+joints~\cite{larsson2020tsugite}. Odyssey adds to this growing body of research
+on expert tools for a new domain, and we discuss key insights that 
+could serve as design principles generalizable across domains (\autoref{sec:discussion}).
+
+% on which there has been a big emphasis in the HCI literature, 

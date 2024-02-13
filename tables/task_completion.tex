@@ -1,0 +1,60 @@
+\begin{tabular}{|c|p{5cm}|p{6cm}|c|}
+  \hline
+      Task & Description & Targeted part of workflow & Success rate \\
+  % \hline
+  % A & Given floating-point implementation (I), $log(x + \sqrt{x \cdot x + 1})$, for the inverse hyperbolic 
+  % sine, identify the parts of the expression causing errors. & Identify troublesome 
+  % subexpressions and problematic ranges. & 4/5 \\
+  % \hline
+  % B & Use Odyssey to analyze the troublesome square root subexpression from I. 
+  % & Gather solutions for subexpression and use these to optimize original expression.
+  % & 4/4 \\
+  % \hline
+  % C & Identify problems with branch expressions in automated solutions for I.
+  % & Judge tool-generated expressions using personal intuition. & 3/4\\
+  % \hline
+  % D & Use Odyssey to find and recommend \textit{log1p}.
+  % & Incorporate accumulated insights to nudge Herbie past roadblocks.
+  % & 2/3 \\
+  % \hline
+  % E & Evaluate whether the solution for I after Tasks A-D are trustworthy.
+  % & Use Odyssey's feedback on expressions and information about expression soundness to 
+  % evaluate expressions' trustworthiness and fitness based on personal standards.
+  % & 2/2 \\
+  % \hline
+  % F & Use Odyssey to optimize the floating-point implementation
+  % $(exp(x)-2) + exp(-x)$ using branch expressions. & Mix solutions from different sources
+  % to create strong solutions. 
+  % & 3/4 \\
+  % \hline
+  \hline
+  1 & $log(x + \sqrt{x \cdot x + 1})$ is an expression for the inverse hyperbolic 
+  sine. Identify the parts of the expression causing errors for large/small $x$. & Diagnose troublesome 
+  subexpressions and problematic ranges. & 4/5 \\
+  \hline
+  2 & Use Odyssey to find a solution for the troublesome square root subexpression from task 1. 
+  & Generate solutions for the subexpression and use these to optimize original expression.
+  & 4/4 \\
+  \hline
+  3 & Is your solution to task 2 good enough? 
+  & Use visualizations to form evaluation criteria for ending analysis.
+  & 4/4 \\
+  \hline
+  4 & Identify problems with branch expressions in fully automated solutions for task 1.
+  & Explain important features of expressions and diagnose issues. & 3/4\\
+  \hline
+  5 & Use Odyssey to find and recommend \textit{log1p} to solve small $x$.
+  & Nudge an automated tool past roadblocks to generate better solutions.
+  & 2/3 \\
+  \hline
+  6 & Evaluate whether the full solution for the expression after tasks 1-5 is trustworthy.
+  & Use Odyssey's feedback on expressions and information about expression soundness to 
+  evaluate expressions' trustworthiness and fitness based on personal standards.
+  & 2/2 \\
+  \hline
+  7 & Use branch conditions to outperform a fully automated rewriting for the expression
+  $(exp(x)-2) + exp(-x)$. & Mix solutions from different sources and tune branch conditions
+  to create stronger solutions. 
+  & 3/4 \\
+  \hline
+\end{tabular}

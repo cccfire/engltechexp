@@ -1,0 +1,115 @@
+% \newcommand{\phaseOne}{Phase 1-Bug Reports~}
+% \newcommand{\phaseThree}{Phase 3-Mock-up~}
+% \newcommand{\phaseFour}{Phase 4-User Design Study~}
+
+\section{Expression Rewriting Workflow and Design objectives}
+
+Our design study %with users of different skill levels
+  led us to model floating-point error improvement
+  as a well-defined workflow consisting of three main stages:
+  diagnosis, solution generation, and tuning.
+% We thus focused Odyssey
+%   on features that directly support this workflow.
+
+
+% The three-stage workflow we identified consists of:
+
+\subsubsection*{First Stage: Diagnosing Problems}
+
+In this stage, users identify problematic operations within expressions,
+  determine which problems are relevant to their objectives,
+  and finding starting points for further analysis.
+For instance, in an expression like $\log(x + \sqrt{x^2 + 1})$,
+  users must determine that
+  the $x^2$ operation overflows for large values of $x$,
+  while the logarithm is inaccurate for small values of $x$.
+The user then decides whether
+  large values of $x$ are relevant in their environment.
+  If so, they focus on avoiding the overflow in $x^2$.
+
+We developed two principles to support diagnosis.
+First, users need ways to focus analysis
+  on the parts of the input range and expression
+  they care about investigating---%
+  without losing track of the broader analysis.
+Second, even experts %(as in \phaseThree and \phaseFour)
+  need tools to help determine which operations cause error
+  without relying on their expertise
+  or resorting to trial-and-error operation replacement.
+
+\subsubsection*{Second Stage: Generating Solutions}
+
+In the second stage,
+  users gather potential rewritings from a variety of sources.
+The objective is to create a pool of rewritings
+  that the user can evaluate and combine
+  to address the problems identified in the first stage.
+While existing tools, like Herbie,
+  are a valuable source of ideas and potential rewritings,
+  the user must still track and organize the outputs.
+Moreover, rewriting ideas may come from many other places:
+  other automated tools, papers, online references,
+  and even the user's own creativity.
+Users need to collect the available rewritings,
+  keep track of their origin,
+  and organize them for easy evaluation.
+
+We developed three principles to support solution generation.
+First, there must be a central repository
+  of rewritings drawn from multiple sources.
+The repository must also store source-specific details,
+  such as Herbie's derivations.
+Second, since users themselves are a major source of ideas,
+  manual input of rewritings must be supported,
+  with instantaneous feedback to provide low-level error checking.
+This supports a tight feedback loop and eases iterative exploration.
+Third, where possible, it should be possible to use user inputs
+  as starting points for additional automated exploration,
+  allowing users to overcome roadblocks faced by automated tools.
+
+\subsubsection*{Third Stage: Tuning}
+
+In the third stage, users test, compare, and tweak rewritings
+  to optimize for their accuracy, performance, and maintainability goals.
+Often the diagnosis and solution generation phases help users identify multiple independent problems
+  and multiple independent rewritings that address them.
+Users must combine these rewritings to address error.
+This combination process is itself iterative.
+  Users needing to validate
+  that the combination did not introduce its own error.
+Moreover, the combination process might itself need tuning.
+  Users may want to adjust the threshold at which
+  they switch from one rewriting to another.
+Overall, this stage involves iterative refinement and experimentation 
+  until the user is satisfied with the result.
+
+We developed two principles to support tuning.
+First, the user needs ways to compare rewritings for accuracy
+  and get instantaneous feedback as they work.
+Second, users need explicit support for combining rewritings,
+  whether directly using ``if'' conditions
+  or indirectly by allowing the user to see multiple rewritings at once.
+
+The order of these stages is not fixed, and users may iterate between them,
+  but we think these principles address explicit user
+  needs during floating-point error improvement
+  with an automated tool.
+
+%   This schematic workflow can be iterated and branched by the user.
+% For example, the user might identify multiple problems
+%   and work on solutions to each one independently,
+%   and then attempt to combine the results.
+% Alternatively, users may receive a promising result from Herbie
+%   and then attempt to understand its floating-point issues
+%   and iterate manually to address them.
+% Yet another possibility, the user may fix error at one operation
+%   only to cause error at a different operation,
+%   requiring them to iterate to resolve this new problem.
+
+% Our observations throughout the design process
+%   suggest that these principles address explicit user
+%   needs during floating-point error improvement
+%   with an automated tool.
+% Moreover, these principles allow users to harness
+%   both their own expertise and automated tool capabilities
+%   to achieve optimal results.

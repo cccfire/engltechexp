@@ -1,0 +1,252 @@
+\begin{table}
+  \centering
+  \input{tables/participant_background.tex}
+  \caption {Five experts from the floating-point community evaluated and suggested future directions for our work.}
+  \label{fig:experts}
+\end{table}
+
+\section{Expert Evaluation}
+The goal of the expert evaluation
+  was to assess the effectiveness of Odyssey
+  in supporting the three-stage workflow we identified:
+  diagnosing problems,
+  generating solutions,
+  and tuning expressions.
+% (\autoref{sec:Workflow}). 
+
+\subsection{Protocol}
+We conducted an interview study
+  with five experts from the floating-point community
+  (see \autoref{fig:experts})
+  to evaluate the effectiveness of Odyssey
+  in supporting the three-stage workflow.
+We recruited the experts via email
+  through professional networks and communities (e.g., FPBench).
+Each expert had different levels of experience
+  in academia and industry,
+  ranging from 3 years to over 45 years,
+  and their backgrounds covered various aspects of floating-point systems,
+  including hardware design, verification, and optimization.
+
+Each interview session was conducted over Zoom, 
+  with experts operating the tool via remote control 
+  to avoid early issues we experienced with participants on networks
+  with special configurations.
+Interviews lasted between 60 and 90 minutes
+  and consisted of three parts:
+\begin{itemize}
+  \item \textit{Introduction and tutorial.} 
+The first author briefly introduced Odyssey 
+  and the problems it is designed to address. 
+Then, each expert followed a hands-on tutorial 
+  demonstrating the usage of Odyssey on a simple example.
+\item \textit{Seven tasks.} Each expert completed seven tasks, each designed
+for one of the three workflow stages and aimed at eliciting the experts'
+reactions to different parts of Odyssey's interface (\autoref{fig:tasks}). If the experts
+encountered difficulties, the first author provided guidance or reminded
+them of relevant interface features from the tutorial.
+\item \textit{Exit survey and discussion.} To conclude, each expert
+completed a survey (\autoref{fig:survey-results}) 
+and participated in a semi-structured interview with the
+first author, where the experts reflected on their experience with Odyssey
+and provided feedback on potential improvements and extensions. The first
+author specifically asked for experts' opinions on the legitimacy of the
+workflow we aim to support, its relevance to their work, and the extent to
+which they felt Odyssey supported each part of the workflow.
+\end{itemize}
+Throughout all three parts, the experts' screens and audio were recorded. The
+first author also took note of the experts' comments, insights, and responses to
+the tasks and survey questions. All study materials are provided as supplemental material.
+
+\subsection{Analysis and Results}
+We conducted an iterative, thematic analysis of expert solutions and the first
+author's notes for each stage of the workflow. Below, we discuss the experts'
+responses to the relevant tasks and survey items for each stage. Through this
+analysis, we aim to provide a qualitative evaluation of Odyssey's effectiveness
+in supporting each part of the workflow.
+
+\begin{table*}
+  \centering
+  \input{tables/task_completion.tex}
+  \caption {Experts worked through up to seven tasks to exercise the features of Odyssey before a survey-based discussion. Due to time constraints, 
+  not all experts completed all tasks.}
+  \label{fig:tasks}
+\end{table*}
+
+\subsubsection*{First Stage: Diagnosing Problems}
+
+Task 1 required experts to analyze the error in an inverse hyperbolic sine
+implementation and identify the parts of the expression causing errors, then
+decide which operation or operations needed to be rewritten in order for the
+rewriting to correctly handle large inputs. Among the five experts, four
+successfully completed this task, relying on Odyssey's error visualizations
+(see~\autoref{fig:diagnosis}).
+
+P2 explored multiple input ranges in order to identify 
+  the two problematic operations: 
+  \longquote{This is across the
+entire sample... so I wonder if it's doing something different on this side
+[clicking a point with a small $x$ value and looking at the local error graph] So
+there it's all the log, and over there... [clicks a large $x$ value] it's all the
+square root. So that's interesting, it's actually coming from different
+operations.} Here, the error plot effectively surfaced the two areas of high
+error (small and large $x$ values), giving the expert clear places to look for
+troublesome operations. Then, by switching between inputs in different regions,
+the expert was able to see that the problematic operation was different
+between these regions.
+
+In the survey (see item 3 in~\autoref{fig:survey-results}),
+  all five experts rated the interface's ability
+  to help identify or confirm specific problems with expressions 
+  at a 7 out of 7.
+We attribute this success mainly to the error plot and local error heatmap,
+  which implemented the second principle we identified for a good diagnosis tool.
+  They supported the user in assigning responsibility for error
+  without relying on expertise or resorting to trial and error.
+% As P3 explained, in the real-world examples we worked on, 
+%   \longquote{[the error characteristics] are varying wildly across the domain 
+%   so that you don't get that much from an average, 
+%   so the ability to click on points 
+%   and identify the error for a subdomain is super useful.}
+As P2 concluded, \longquote{%
+  Having the graph and being able to click 
+  on the different places where error is high 
+  is definitely nicer than just looking at output 
+  in a text file.}
+
+\subsubsection*{Second Stage: Generating Solutions}
+
+We designed several tasks to evaluate Odyssey's support for collecting and
+evaluating new expressions that address the identified problems in floating-point
+expressions. Close to all experts who attempted each
+task succeeded (see Tasks 2 and 5 in~\autoref{fig:tasks}).
+
+Task 2 required experts to analyze a troublesome
+subexpression from Task 1 and find a better rewriting for it. Then, experts needed
+to bring the solution back to the original analysis and decide if they were
+happy with it. Four of the five experts who attempted Task 2 successfully
+completed it, showing that the interface facilitated the collection of solutions
+and their integration into existing expressions. Of those four, two experts found their own unique approaches to solving the problem identified in Task 1 rather than relying on an automated solution. One expert pulled a factor of $x$ out of the square root, and another expert created a branch that switched to an approximation for large values of $x$. Both of these approaches showed low error on the error plot, though the experts noted there could be issues with these choices (for example, branching impacts performance, and dividing by $x$ is risky when $x$ could be 0). This showcases the flexibility of
+Odyssey in allowing users to explore alternative solutions and evaluate their
+impact on the error plot. 
+(The expert who did not complete Task 2 was our first participant,
+with whom we lost much of the interview time due to the networking issues mentioned earlier.)
+
+Similarly, Task 5 asked experts to find a more accurate rewriting for a
+subexpression applicable to small values of $x$. Three out of the four
+experts successfully completed this task, further supporting the
+effectiveness of Odyssey in assisting experts in gathering and evaluating
+potential solutions.
+
+P3 had the following to say about working through the process up to Task 5:
+\longquote{%
+It feels like quite a natural way you might approach this problem as a human. You're burrowing down into it more precisely and pushing your error around a little bit. I thought the transition of `we've moved the error from the log into the subtract [using log1p], now I know
+how to deal with the error in a subtract as well' felt natural, ... since ... once we figure out it was going to be the subtract that was giving us trouble, then 
+[we can use Herbie to rewrite successfully]. 
+It gets there much faster, 
+but it's cool that I also feel that 
+I would have thought about going in a similar direction.}
+
+% Task 4 asked experts to examine the best solutions recommended by Herbie,
+% which all contained conditional branches, and identify any issues despite the
+% relatively good average error. experts needed to refer to the expression
+% details area and examine the branch point regions on the graph to pinpoint areas
+% with high remaining error and explain that the branch points were still risk
+% spots for error. Out of the four experts who attempted Task 4, three
+% successfully completed it, indicating that the interface mostly enabled users to
+% effectively evaluate and analyze expression features. This result demonstrates
+% that Odyssey proficiently supports the second step of our workflow, although
+% there is still room for improvement.
+
+In the survey, experts rated the interface's ability to generate ideas for
+solving specific problems (item 4) with scores ranging from 5 to 7, with an
+average of 5.8. The interface's effectiveness in evaluating the quality of ideas
+quickly (item 5) was rated between 5 and 7, with an average of 6.4. These
+relatively high ratings indicate that the experts found Odyssey helpful in
+generating and evaluating ideas for improving floating-point expressions.
+
+Users were able to use Odyssey to successfully generate 
+  a variety of valid nontrivial new expressions for analysis, 
+  both using an automated tool 
+  (e.g. the way we expected users to solve Task 2) 
+  and by themselves (P5 and P4). This was significantly different from our experience 
+  in the earliest parts of the design process.
+  The ability to send rewrites back to Herbie was a vital
+  part of the solution generation process for the three experts who were able to complete Task 5.
+
+% Our results for this stage 
+%   follow from the three design principles 
+%   for solution generation support 
+%   that we identified through our design process.
+% The main result 
+%   was that users were able to use Odyssey to successfully generate 
+%   a variety of valid nontrivial new expressions for analysis, 
+%   both using an automated tool 
+%   (e.g. the way we expected users to solve Task 2) 
+%   and by themselves (P5 and P4).
+% This was significantly different from our experience 
+%   in the earliest parts of \phaseFour~of the design process,
+%   which we attribute to improved diagnosis tools as well as
+%   providing immediate feedback on syntax errors 
+%   and rendering a LaTeX version of the user's in-progress expression.
+% Finally, the ability to send rewrites back to Herbie was a vital
+%   part of the solution generation process for the three experts who were able to complete task 5.
+
+
+\begin{table*}
+  \centering
+  \input{tables/survey_results.tex}
+  \caption {After completing the seven tasks, experts were asked to evaluate
+ different aspects of the tool on a scale of 1 to 7. }
+  \label{fig:survey-results}
+\end{table*}
+
+\subsubsection*{Third Stage: Tuning}
+
+The third stage of our proposed workflow involves tuning expressions to further
+optimize their accuracy and performance. To assess Odyssey's support for this
+stage, we evaluated Task 7, as well as survey items 6 and 7, which inquired about
+the interface's support for comparing and mixing different expressions.
+
+Task 7 challenged experts to create a more accurate expression than
+Herbie's best alternative for a given expression by combining different
+solutions and fine-tuning the branch point. The task demonstrated that a human
+can use Odyssey to outperform Herbie's internal heuristics when unique
+requirements call for a tailored approach. 
+After using the range zoom feature and noticing 
+  Herbie's solution was still outperforming their solution 
+  on a small region,
+  P2 remarked, 
+  \shortquote{So in this view, we can see that 
+  we don't have quite the right number [for the branch point].} 
+The expert then adjusted the branch point 
+  based on the visual feedback.
+
+In the survey, experts rated the interface's capacity to help them mix expressions from different sources (item 7) with
+scores ranging from 4 to 7, with an average of 5.4. The interface's support for
+comparing different expressions (item 6) was rated even more highly, at an
+average of 6.4 (range from 6 to 7).
+
+As we can see in the example above, 
+  the especially high rating for comparison
+  was likely a result of combining the ability 
+  to plot the error for different expressions
+  together with zooming to focus on getting feedback on specific regions.
+A couple experts (P4, P5)
+  mentioned wanting more support for combining expressions, 
+  especially around conditional branches.
+P4 explained that 
+  an automated tool might be able to add guard conditions 
+  where appropriate.
+
+Finally, the experts appreciated the potential power 
+  of mixing human and automated solutions, 
+  with P3 commenting that 
+  suggesting \texttt{log1p} and \texttt{hypot} to Herbie 
+  felt similar to proof assistant tools where \shortquote{if you just add in an additional step on the way or an additional lemma... then it can actually nudge it over that threshold.}
+
+In summary, the results from Task 7, along with the survey responses for items 6
+and 7, provide evidence that Odyssey effectively supports tuning expressions for optimal accuracy and
+performance. The interface enables users to mix expressions
+and adjust coefficients while offering real-time feedback, streamlining the
+tuning process and enhancing the overall quality of floating-point expressions.

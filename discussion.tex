@@ -1,0 +1,206 @@
+\section{Discussion} \label{sec:discussion}
+As the first expression rewriting workbench for the numerics community,
+  % Odyssey shows that it is relatively easy to build useful expert tools
+  Odyssey demonstrates how to build useful expert tools
+  % that provide this user experience from the many existing tools that try to automate design search,
+  % and here we offer general pointers from our experience.
+  that enable users to more effectively search a design space. 
+  Below, we discuss three insights that were key to Odyssey's design. 
+  These insights serve as design principles that generalize to expert tools in other domains where users want to navigate a design space.
+
+\paragraph{Expose heuristics, not states.}
+  First, we found that exposing the internal exploration-focusing heuristics of the tool,
+  rather than just the search states---%
+  for Herbie, mainly the local error---helped users significantly,
+  beyond its use in Herbie alone. %the original system.
+By connecting this heuristic to other simpler metrics (like the input error plot), 
+  users developed \textit{explanations} of the heuristic's value
+  that helped them understand
+  what was relevant about the search state---%
+  for expression search,
+  what subexpression was probably causing the error. 
+By comparing the heuristic and their explanation across expressions, 
+  users could check if the issue was solved, 
+  even if the expression shape was too complicated for an automated tool to recognize.
+
+  \paragraph{Give access to intermediate representations.}
+  Second, we found that giving the user ownership over intermediate parts of the search
+  made the tool much more useful. Doing so even allowed us to catch a bug in the underlying tool.
+  A widely held belief among the HCI community is that higher levels of abstraction are more desirable for end-users. 
+  Therefore, in an automated expert tool, it can seem natural to hide the middle of a search from the user to keep them working at a high level.
+However, in our study, we found that users wanted to be able to see and control the search process. 
+  Experts were particularly eager to introduce their own ideas and test assumptions.
+In Odyssey, without building any separate tooling 
+  except for a table that tracks candidates
+  and synchronizes with visualizations of existing automated analyses, 
+  users are able to explore a much broader space of possible solutions 
+  in a way that was not possible with the original tool, 
+  simply by letting a human manage search candidates.
+
+\paragraph{Test expert workflows with relative novices}
+% Finally, rather than preventing the user from thinking about the search, 
+Finally, we were able to identify the appropriate level of abstraction in Odyssey because of our own iterative design process that involved novices and experts. 
+  % the key to keeping our expert tool at the appropriate level of abstraction was establishing a workflow 
+  % in a user study that included relative novices
+  % so we understood the basic needs of and cognitive burden on experts.
+  Involving novices sensitized us to the foundational cognitive burdens experts had developed workarounds for. 
+% This ties back to the first point about showing a heuristic---%
+%   even experts spent a lot of time 
+%   and sometimes made mistakes predicting the heuristic (local error).
+% However, we only identified this as a blocking issue 
+%   after including novices in our initial design study.
+We realized that if our tool could not help a novice at least understand basic issues,
+  it was likely too opaque for experts to use productively.
+% This change ended up being the most praised feature by experts.
+The local error plot, a key feature we would not have included without involving novices, ended up being the most praised feature by experts.
+
+% For Odyssey, the needs we found were classic debugging principles: 
+%   the user needs to understand \textit{why} an expression has error (not just \textit{that} it has error)
+%   and they ideally should see options for fixing the error.
+% Surprisingly, the local error heatmap 
+%   was originally only added to help out novices,
+%   who had no hope of rewriting productively without it,
+%   but it ended up being the most praised feature by experts.
+% Without our initial user study involving novices, 
+%   we doubt this feature would have been added.
+
+% Within the particular domain of floating-point analysis, 
+%   we see our results as very promising, especially for early work on supporting a
+%   unified workflow.
+% While we only included one source of automatic rewritings and one source of
+%   analyses in Odyssey (both provided by our Herbie API), even this was enough for
+%   users to understand error and solve real-world problems like the Rust
+%   \texttt{asinh} bug we’ve discussed.
+% Furthermore, the tool-independence of Odyssey’s database of expressions and
+%   analyses means more tools can be easily added in the future.
+\paragraph{Applications to other domains with user-driven design space search}
+While this paper focuses on floating-point analysis, 
+the above key insights and findings suggest generalizable principles for user-driven design space search. 
+%  We see this work as having significance
+%   for human-in-the-loop design space exploration
+%   both within the domain of floating-point error correction 
+%   and beyond.
+The tool wrapped by Odyssey, Herbie, works in a way that should be 
+familiar to anyone who has worked with a design space exploration tool
+or classical AI search:
+% We have said that the tool wrapped by Odyssey, Herbie, rewrites expressions.
+% Under the hood, Herbie actually follows a familiar process:
+  it identifies a troublesome part of an expression, 
+  applies algebraic rewrites or approximations to that part of the expression to obtain new expressions, 
+  tests those expressions to see if they are worth exploring, 
+  and finally merges the best options.
+
+The shape of this process 
+  matches the workflow we describe for an analyst 
+  identifying and solving problems with an expression step-by-step 
+  while tracking possible rewriting directions.
+% Broadly, this looks like a classical AI search, 
+%   with a search frontier and one or more heuristic functions.
+This search shape is used in tools across many domains,
+  including in automated theorem provers, carpentry compilers,
+  machining systems, and ASIC design space exploration tools. 
+  % but the workflow we have described is often not the shape of the user experience of those tools. 
+  % Yet, a wide range of expert tools do not apply the above three principles. 
+  % As a result, the tools remain difficult to use and error-prone for even highly skilled users. 
+  Yet, expert tools in these domains do not apply the above three principles. 
+  As a result, the tools remain difficult to use and error-prone. 
+  We hypothesize that applying the principles will improve expert tools in other domains where users search a design space. 
+
+
+\subsection{Limitations and Future Work} 
+
+A major limitation of our design process was the tight design loop 
+  we had to maintain during development. 
+While this was necessary to ensure
+  we were building a system that would be useful to users, this meant
+  we had to compromise on the polish of some features and 
+  altogether avoid others which would take too long to implement or require
+  disturbing many parts of the interface.
+With more time, we plan to further improve the interface's layout and
+  provide more structured expression editing support.
+
+% \todo{Add other limitations, maybe
+% tight design loop} For example, we were a little surprised to see users using the zoom function so
+% frequently, despite it involving a relatively slow resampling operation that reanalyzes
+% all of the expressions in the table. Based on this, we want to add support for using
+% brushing on the graph to select and temporarily zoom on a subrange without
+% resampling.
+
+% The signs we saw and feedback we received pointed to this being an area that
+%   can use much more interface-level support, especially from systems that
+%   increase the interoperability and user-friendliness of analysis tools.
+% Our experience was that even members of our team who originally had little
+%   floating-point background were able to develop features users in our studies
+%   ultimately found very helpful, simply by pushing for increased user access to
+%   tool-internal data.
+
+Of course, the main future work we have planned is to extend Odyssey to
+  incorporate more analyses and sources of rewritings, including ideas like
+  operation cost analyses and hardware-specific rewrites that were mentioned by
+  the experts in our study.
+Tools like PRECiSA~\cite{precisa} that already have an HTML-based analysis interface may be a good starting point 
+  for testing these integrations. 
+
+Floating-point experts were very appreciative of our work, and saw a variety of
+  ways it could be extended to further support their particular areas of
+  expertise.
+These included ideas like adding support for multi-precision rewritings,
+  incorporating operation cost analyses from Herbie and other tools, adding ways
+  of helping human users simultaneously optimize at least 3 variables, and
+  increasing support for splitting expressions into subregions and subexpressions
+  based on domain-specific heuristics.
+
+% There are many precedents for applying human-in-the-loop methods to the
+%   solution of formal problems, as P3’s striking analogy between Odyssey and proof
+%   assistants like Coq pointed out.
+% Proof assistants are a well-explored domain with a clear interactive workflow,
+%   and we think considering this analogy further could be also fruitful.
+
+Odyssey also has clear potential application in floating-point education.
+Several of our tasks asked users to explain to the interviewer potential
+  problems with an expression using the interface, and both the experts and the
+  novices in our formative study were able to point out areas of high error,
+  select points, and zoom in to get a better look at problem regions to support
+  diagnostic claims.
+Odyssey has the potential to thrive in a classroom setting; it could be used by
+  an instructor to show off how expression rewriting makes expressions more
+  accurate or by students to explore and diagnose error sources an expression and
+  try fixing them.
+We plan to try applying Odyssey in an undergraduate class covering
+  floating-point representations soon.
+
+We are also excited by the explanatory potential offered by the incorporation
+  of large language models (LLMs) like GPT.
+We have found that available language models can, in fact, offer rewritings and
+  generate plausible explanations for users, but they are prone to
+  “hallucinating” and incorporating nonsensical logic, so their output must be
+  validated before it is used.
+With access to Odyssey's calculation and validation tools, 
+  an LLM might be able to avoid these issues.
+% Odyssey is the perfect platform for investigating the rewriting attempts of
+% LLMs, and may be able to incorporate them in other ways, including by sending a
+%   record of the user’s work on the analysis to the language model as context for
+%   further generation.
+
+Finally, a major possible extension was brought up independently by two
+  different participants, who commented that they would be very interested in
+  plugging in additional visualizations showing actual output effects of errors
+  for each expression.
+For example, one participant has worked with expressions representing ellipses,
+  and wanted to see how different kinds of error could lead to distortion of the
+  ellipses.
+Allowing for additional visualizations would be a major possible improvement,
+  since it will help users understand whether the error they see on the error
+  plot matters when code is compiled and run in practice.
+If (as with ellipses) the output space can be mapped back to specific input
+  values, combining output visualization with the error graph heatmap will let
+  experts relate points with noticeable error in the actual output to the
+  particular mathematical operation causing that error.
+% Thanks to the reactive database model of Odyssey’s codebase, it will be easy to
+%   plug in this kind of output visualization and have it communicate with the rest
+%   of the interface about selected points.
+
+Overall, we are excited to see what floating-point experts and novices
+  end up doing with Odyssey 
+  and look forward to improving our support 
+  for their work in the future.
